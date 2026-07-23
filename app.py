@@ -1593,11 +1593,29 @@ def build_prompt_curriculum_block(domain_name):
     lines.append("- Draw each question from the skill group that matches its difficulty tag.")
     return "\n".join(lines)
 
+def build_subtopics(subject):
+    """Per-domain sub-skill list (across low/mid/high) for the optional sub-topic dropdown."""
+    cur = load_curriculum()
+    out = {}
+    for t, m in cur.items():
+        if t == "_meta" or not isinstance(m, dict) or m.get("subject") != subject:
+            continue
+        skills = []
+        for lvl in ("low", "mid", "high"):
+            for r in m.get("levels", {}).get(lvl, []) or []:
+                s = (r.get("skill") or "").strip()
+                if s and s not in skills:
+                    skills.append(s)
+        if skills:
+            out[m.get("name", t)] = skills
+    return out
+
 # Skill Domains — byte-for-byte identical to the Placement Diagnostic Report labels.
 math_topics = curriculum_domain_names("math")
 english_topics = curriculum_domain_names("english")
-math_subtopics = {}
-english_subtopics = {}
+# Sub-topics = each domain's sub-skills from curriculum.json (optional narrowing).
+math_subtopics = build_subtopics("math")
+english_subtopics = build_subtopics("english")
 
 st.session_state.all_topics = {"Math": math_topics, "English": english_topics}
 
@@ -1625,7 +1643,7 @@ else:
 st.markdown("---")
 
 # 3. Selection & Generation
-WHOLE_CHAPTER = "-- Whole Chapter --"
+WHOLE_CHAPTER = "-- Whole Domain --"
 col_m, col_e = st.columns(2)
 
 with col_m:
