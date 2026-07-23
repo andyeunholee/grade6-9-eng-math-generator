@@ -158,10 +158,15 @@ def get_gemini_response(input_prompt, content_parts, temperature=0.2):
     try:
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
+            try:
+                api_key = st.secrets["GOOGLE_API_KEY"]   # Streamlit Cloud deployment
+            except Exception:
+                api_key = None
+        if not api_key:
             if 'api_key' in st.session_state and st.session_state.api_key:
                 api_key = st.session_state.api_key
             else:
-                st.error("Google API Key not found.")
+                st.error("Google API Key not found. Set GOOGLE_API_KEY in your local .env or in Streamlit Secrets.")
                 return None
 
         genai.configure(api_key=api_key)
