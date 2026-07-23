@@ -982,7 +982,7 @@ def build_elite_practice_docx(md_text):
     r.font.color.rgb = RGBColor.from_string(_ELITE_NAVY)
     p2 = hcell.add_paragraph()
     p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r2 = p2.add_run(f'SAT {subject} PRACTICE MANUAL')
+    r2 = p2.add_run(f'GRADE 6-9 {subject} PRACTICE MANUAL')
     r2.bold = True
     r2.font.size = Pt(11)
     r2.font.color.rgb = RGBColor.from_string(_ELITE_ANSWER)
@@ -1367,7 +1367,7 @@ class ElitePDF(FPDF):
         self.set_font("Helvetica", "B", 10)
         self.set_text_color(255, 255, 255)
         self.set_y(5)
-        self.cell(0, 5, "ELITE PREP | SAT ADAPTIVE PRACTICE STATION", align="C", ln=True)
+        self.cell(0, 5, "ELITE PREP | GRADE 6-9 PRACTICE", align="C", ln=True)
         self.ln(10)
 
     def footer(self):
@@ -1653,7 +1653,7 @@ with col_m:
             # subsection; otherwise keep the broad whole-chapter coverage.
             if math_use_sub:
                 math_topic_line = (
-                    f"Create **{total_count} SAT Math Practice Questions** that focus "
+                    f"Create **{total_count} Grade 6-9 Math Practice Questions** that focus "
                     f"specifically on the sub-topic **'{selected_math_sub}'**, which is a subsection "
                     f"of **'{selected_math}'**."
                 )
@@ -1759,7 +1759,7 @@ with col_e:
                 # subsection; otherwise keep the broad whole-chapter coverage.
                 if use_sub:
                     topic_line = (
-                        f"Create **{total_count} SAT English Practice Questions** that focus "
+                        f"Create **{total_count} Grade 6-9 English Practice Questions** that focus "
                         f"specifically on the sub-topic **'{selected_sub}'**, which is a subsection "
                         f"of **'{selected_eng}'**."
                     )
