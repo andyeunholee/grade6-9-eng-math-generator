@@ -1,0 +1,230 @@
+{
+  "_meta": {
+    "purpose": "LLM 문제 생성의 근거가 되는 커리큘럼 프레임워크. 10개 스킬 태그 × 레벨(low/mid/high) × 세부 스킬(chapter). generate_problems.js가 style/example을 프롬프트에 주입한다.",
+    "levelScale": {
+      "english": { "low": "Foundational (Grade 8-9)", "mid": "Intermediate (Grade 9-10)", "high": "Advanced (SAT-level)" },
+      "math": { "low": "Foundational (Grade 6)", "mid": "Intermediate (Grade 7-8)", "high": "Advanced (Grade 9 / Algebra 1)" }
+    },
+    "itemContract": "각 문항은 {q, c[4], a(0-based 정답 인덱스), exp} 형식. MAIN/EVID는 지문을 q 안에 임베드. 수학 문항은 선택적으로 fig(matplotlib 파이썬 코드)를 포함할 수 있고, 서버가 이를 PNG로 렌더해 docx·온라인에 표시한다.",
+    "note": "챕터가 없는 태그/레벨은 자동으로 기존 문제은행으로 폴백된다. 세부 스킬·예시가 생성 품질을 좌우하므로 신중히 유지·확장할 것."
+  },
+
+  "GRAM": {
+    "name": "Grammar & Usage",
+    "subject": "english",
+    "style": "한 문장짜리 문항. 빈칸(___) 채우기 또는 밑줄 오류 수정 형태. 선택지 4개는 짧은 문법 변형. exp는 적용된 규칙 이름을 명시. 문장 주제는 학술·일상·시사로 다양하게. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "Subject-verb agreement (intervening phrase)", "desc": "주어와 동사 사이에 전치사구가 끼어 수 일치를 흐리는 경우.", "example": "The stack of applications on the desk ___ growing daily." },
+        { "skill": "Simple past vs present perfect", "desc": "완료된 과거 사건과 현재까지 이어지는 상태의 시제 구분.", "example": "By the time we arrived, the show ___ already begun." },
+        { "skill": "Its vs it's / possessive pronouns", "desc": "소유격 대명사와 축약형 혼동.", "example": "The committee published ___ findings last week." },
+        { "skill": "End-mark & comma splice basics", "desc": "두 독립절을 쉼표만으로 잇는 오류 식별.", "example": "The rain stopped, we continued the game." }
+      ],
+      "mid": [
+        { "skill": "Pronoun-antecedent agreement", "desc": "선행사와 대명사의 수·인칭 일치, 부정대명사(each, neither) 포함.", "example": "Each of the researchers submitted ___ own report." },
+        { "skill": "Verb tense sequence in complex sentences", "desc": "종속절-주절 간 시제 일관성과 조건문 시제.", "example": "Had the council ___ the memo earlier, the vote would have changed." },
+        { "skill": "Colon and semicolon usage", "desc": "목록·설명을 도입하는 콜론, 독립절을 잇는 세미콜론.", "example": "One obstacle remained ___ funding." },
+        { "skill": "Who vs whom / whoever vs whomever", "desc": "관계·의문 대명사의 격.", "example": "The grant goes to ___ the panel judges most deserving." }
+      ],
+      "high": [
+        { "skill": "Inverted conditionals & subjunctive", "desc": "If 생략 도치, 가정법 mood.", "example": "___ the evidence been disclosed sooner, the case might have collapsed." },
+        { "skill": "Agreement with correlative/compound subjects", "desc": "neither...nor, along with, as well as가 만드는 수 일치 함정.", "example": "The verdict, along with the judge's remarks, ___ sealed until Monday." },
+        { "skill": "Nonrestrictive appositive punctuation", "desc": "삽입 설명구를 쉼표로 정확히 분리.", "example": "The physicist Lise Meitner, a pioneer of fission, ___ denied the prize." },
+        { "skill": "Pronoun ambiguity resolution", "desc": "지시 대상이 모호한 대명사를 명확히 고치는 선택.", "example": "The senator briefed the governor before ___ resigned. (모호성 제거 선택)" }
+      ]
+    }
+  },
+
+  "SENT": {
+    "name": "Sentence Structure",
+    "subject": "english",
+    "style": "문장 결합·수정·병렬·수식어 위치를 묻는 문항. 종종 원문 두 문장을 제시하고 최선의 결합/수정본을 고르게 함. 선택지는 완결된 문장. exp는 왜 정답이 문법·명료성 면에서 최선인지 설명. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "Run-on / comma-splice correction", "desc": "런온·쉼표 오류를 접속사나 종속절로 고치기.", "example": "Which fixes the run-on? \"The tide rose quickly the crew secured the lines.\"" },
+        { "skill": "Fragment vs complete sentence", "desc": "완결 문장과 조각 구분.", "example": "Which of the following is a complete sentence?" },
+        { "skill": "Basic parallel structure", "desc": "등위 목록의 병렬(동명사/부정사 일치).", "example": "She spent the summer swimming, reading, and ___." }
+      ],
+      "mid": [
+        { "skill": "Misplaced / dangling modifier", "desc": "수식어가 잘못된 주어를 꾸미는 오류 수정.", "example": "Which corrects: \"Dripping with cheese, Marcus served the pizza.\"" },
+        { "skill": "Subordination for logical relationship", "desc": "인과·시간 관계를 종속절로 명확히 결합.", "example": "Combine: \"The museum was closing. Dana hurried to the last exhibit.\"" },
+        { "skill": "Parallelism with correlative pairs", "desc": "not only...but also 등 상관접속사 병렬.", "example": "The mentor was praised not only for her expertise but also ___." }
+      ],
+      "high": [
+        { "skill": "Concise revision (wordiness/redundancy)", "desc": "장황·중복 표현을 간결하게.", "example": "Most concise: \"The reason the delay happened was because of the fact that data was missing.\"" },
+        { "skill": "Complex subordination across 3 ideas", "desc": "세 사건을 논리적으로 한 문장에 종속 결합.", "example": "Combine three: glacier retreated / researchers resurveyed / confirmed trend." },
+        { "skill": "Parallel structure with mixed forms", "desc": "명사구·동명사·부정사가 섞인 목록의 병렬 교정.", "example": "The report faults the agency for ignoring warnings, delaying inspections, and ___." }
+      ]
+    }
+  },
+
+  "MAIN": {
+    "name": "Reading: Main Idea & Inference",
+    "subject": "english",
+    "style": "지문을 q 안에 임베드: 형식은 Read: \"<2-5문장 지문>\" — <질문>. 지문은 과학·인문·사회·문학으로 다양하게. 질문은 주제/중심 생각/추론/저자 태도/수사적 기능. 선택지 4개 중 오답은 '사실이나 지엽적' 또는 '지나치게 넓음' 또는 '지문에 반함'. 정답은 명백히 하나. 지문을 c나 exp에 넣지 말 것 — 오직 q에만.",
+    "levels": {
+      "low": [
+        { "skill": "Explicit main idea", "desc": "명시적으로 진술된 중심 생각 파악.", "example": "Read: \"Before refrigeration, ice was harvested from lakes... The trade collapsed within a decade of the electric freezer.\" — What is the main idea?" },
+        { "skill": "Simple inference about character/situation", "desc": "짧은 서사에서 인물의 감정·상황 추론.", "example": "Read: \"Milo saved his allowance for three months... In June he bought the telescope.\" — What can you infer about Milo?" },
+        { "skill": "Author's purpose (basic)", "desc": "왜 특정 예시를 들었는지.", "example": "Read: \"...Some ants build bridges with their bodies...\" — The author mentions bridges in order to:" }
+      ],
+      "mid": [
+        { "skill": "Central point of an argument", "desc": "대조·전환이 있는 논증형 지문의 핵심.", "example": "Read: \"The lab's first three grant applications were rejected for 'excessive ambition'... the fourth, narrower, was funded...\" — What is the central point?" },
+        { "skill": "Author's attitude / tone", "desc": "저자의 태도(비판적·감탄·중립 등) 추론.", "example": "Read: \"...quietly seeded the very program the earlier proposals had imagined.\" — The author's attitude toward the reviewers is best described as:" },
+        { "skill": "Function of a phrase within a passage", "desc": "특정 어구가 지문에서 하는 역할.", "example": "Read: \"...speed built on infrastructure beats speed built on heroism.\" — The phrase \"speed built on heroism\" refers to:" }
+      ],
+      "high": [
+        { "skill": "Nuanced thesis with concession", "desc": "양보-반박 구조에서 진짜 주장 분리.", "example": "Read: \"It is tempting to read the decline of letters as loss. Yet correspondence has migrated, multiplied, accelerated...\" — The central claim is that:" },
+        { "skill": "Implication / reasoned inference", "desc": "진술되지 않은 함의를 논리적으로 도출.", "example": "Read: \"...a clock that is right once is lucky; a model that improves with each failure is science.\" — Her reply implies that:" },
+        { "skill": "Rhetorical function of a sentence", "desc": "문장이 논증에서 수행하는 수사적 기능.", "example": "Read: \"Skeptics note, fairly, that the trial was small. But its effect size was so large...\" — The first sentence functions as a(n):" }
+      ]
+    }
+  },
+
+  "EVID": {
+    "name": "Reading: Evidence & Detail",
+    "subject": "english",
+    "style": "지문을 q 안에 임베드: Read: \"<정보·수치가 담긴 2-5문장 지문>\" — <질문>. 질문은 명시적 세부사항 확인 또는 '어느 근거가 주장을 가장 잘 뒷받침하는가'. 데이터·연구·역사 지문 선호. 오답은 지문에 있으나 무관한 수치 또는 지문에 없는 값. 정답은 명백히 하나. 지문은 q에만.",
+    "levels": {
+      "low": [
+        { "skill": "Locate an explicit fact", "desc": "지문에 명시된 수치·이름을 찾기.", "example": "Read: \"A 2019 audit of the city's 412 bridges rated 37 as structurally deficient...\" — How many bridges were rated deficient?" },
+        { "skill": "Identify a stated reason", "desc": "명시된 이유·기준 확인.", "example": "Read: \"...officials prioritized the 12 bridges carrying the heaviest daily traffic.\" — Officials chose repairs based on:" }
+      ],
+      "mid": [
+        { "skill": "Detail supporting a specific claim", "desc": "특정 주장을 뒷받침하는 세부 근거 선택.", "example": "Read: \"...calories fell 9% in the menu group but only 1% in the poster group...\" — Which detail best supports that placement mattered?" },
+        { "skill": "Precise value from context", "desc": "여러 수치 중 질문이 가리키는 정확한 값.", "example": "Read: \"...no single monarch completes the round trip; it takes three to four generations...\" — The full round trip is completed by:" }
+      ],
+      "high": [
+        { "skill": "Strongest evidence for causation", "desc": "인과 주장을 가장 잘 뒷받침하는 설계·근거 식별.", "example": "Read: \"...the groups matched in age, income, and baseline health...\" — Which detail best supports that cycling itself caused the difference?" },
+        { "skill": "Evaluate competing study designs", "desc": "두 연구의 표본·무작위성으로 신뢰도 비교.", "example": "Read: \"Study 1 (3,200 students, randomized)... Study 2 (45 self-selected volunteers)...\" — Which study has the stronger design, and why?" }
+      ]
+    }
+  },
+
+  "VOCAB": {
+    "name": "Vocabulary in Context",
+    "subject": "english",
+    "style": "한 문장에 밑줄 어휘를 <u>word</u>로 표시하고 'most nearly means'를 물음. 선택지는 4개의 동의어 후보(오답은 관련은 있으나 문맥에 안 맞음). exp는 문맥 단서를 짧게 설명. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "Common academic adjectives/nouns", "desc": "기초 학술 어휘의 문맥 의미.", "example": "The negotiations reached an <u>impasse</u>; neither side would move. \"Impasse\" most nearly means:" },
+        { "skill": "High-frequency verbs", "desc": "일상·학교 맥락 동사.", "example": "Please <u>observe</u> the fish carefully and note what you see. \"Observe\" most nearly means:" }
+      ],
+      "mid": [
+        { "skill": "Words with context-dependent shades", "desc": "문맥에 따라 뉘앙스가 갈리는 중급 어휘.", "example": "The CEO's remarks were deliberately <u>equivocal</u>. \"Equivocal\" most nearly means:" },
+        { "skill": "Descriptors of attitude/manner", "desc": "태도·방식을 나타내는 형용사.", "example": "Years of drought made the farmers <u>circumspect</u> about expanding. \"Circumspect\" most nearly means:" }
+      ],
+      "high": [
+        { "skill": "SAT-level abstract vocabulary", "desc": "추상적·격식 어휘의 정밀한 의미.", "example": "The committee offered only <u>perfunctory</u> review. \"Perfunctory\" most nearly means:" },
+        { "skill": "Words signaling stance in argument", "desc": "논증에서 입장을 드러내는 어휘.", "example": "Once considered <u>intransigent</u>, the negotiator accepted the compromise. \"Intransigent\" most nearly means:" }
+      ]
+    }
+  },
+
+  "NUM": {
+    "name": "Number & Operations",
+    "subject": "math",
+    "style": "텍스트 수학(LaTeX 금지, 거듭제곱 ^, 곱 *, 분수 a/b). 정수·분수·소수·정수론 연산. 이 영역은 보통 도형이 불필요(fig 생략). 선택지는 4개의 수치, 오답은 흔한 계산 실수를 반영. exp는 계산 단계를 한 줄로. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "Order of operations", "desc": "괄호·지수·사칙 순서(PEMDAS).", "example": "What is 12 - 3 * (2 + 2)?" },
+        { "skill": "Fraction & decimal operations", "desc": "분수·소수의 사칙연산.", "example": "What is 3/4 + 2/3?" },
+        { "skill": "Integers & absolute value", "desc": "음수 연산, 절댓값.", "example": "What is -7 + 3 - (-5)?" }
+      ],
+      "mid": [
+        { "skill": "Exponent rules", "desc": "지수 법칙(곱·나눗셈·거듭제곱).", "example": "Simplify 2^3 * 2^4." },
+        { "skill": "Prime factorization / GCF / LCM", "desc": "소인수분해와 최대공약·최소공배.", "example": "What is the least common multiple of 6 and 8?" },
+        { "skill": "Percent of a number", "desc": "백분율 계산.", "example": "What is 35% of 240?" }
+      ],
+      "high": [
+        { "skill": "Scientific notation & large-number ops", "desc": "과학적 표기법 연산.", "example": "Express (3 * 10^4) * (2 * 10^3) in scientific notation." },
+        { "skill": "Radicals & simplifying roots", "desc": "제곱근 단순화.", "example": "Simplify sqrt(72)." }
+      ]
+    }
+  },
+
+  "RATIO": {
+    "name": "Ratio & Proportion",
+    "subject": "math",
+    "style": "텍스트 수학. 비·비율·비례·단위환산·비례식 문장제. 보통 도형 불필요하나, 비례 관계를 그래프로 보이면 유용한 문항은 fig(matplotlib) 포함 가능. 선택지 4개 수치, 오답은 역비율·부분/전체 혼동을 반영. exp는 비례식을 한 줄로. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "Simplify a ratio", "desc": "비의 약분.", "example": "Express the ratio 18:24 in simplest form." },
+        { "skill": "Unit rate", "desc": "단위당 비율.", "example": "If 5 pens cost $3.50, what is the cost per pen?" }
+      ],
+      "mid": [
+        { "skill": "Proportional word problems", "desc": "비례식으로 미지량 구하기.", "example": "If 3 machines make 120 parts in an hour, how many parts do 5 machines make in an hour?" },
+        { "skill": "Scale & unit conversion", "desc": "축척·단위 환산.", "example": "A map scale is 1 cm : 5 km. How many km is 7 cm?" }
+      ],
+      "high": [
+        { "skill": "Direct & inverse variation", "desc": "정비례·반비례 관계.", "example": "y varies inversely with x. If y = 8 when x = 3, find y when x = 12." },
+        { "skill": "Percent change & multi-step ratios", "desc": "증감률과 다단계 비율.", "example": "A price rises 20% then falls 20%. What is the net percent change from the original?" }
+      ]
+    }
+  },
+
+  "ALG": {
+    "name": "Algebra",
+    "subject": "math",
+    "style": "텍스트 수학. 변수는 x, y. 일차식·연립·부등식·함수·인수분해·이차식(레벨에 맞게). 직선·포물선·함수 그래프가 이해를 돕는 문항은 fig(matplotlib 좌표평면 그래프) 포함. 선택지는 수치나 식, 오답은 부호·이항 실수를 반영. exp는 풀이 단계를 한 줄로. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "One-step & two-step equations", "desc": "일·이단계 일차방정식.", "example": "If 3x - 7 = 14, what is x?" },
+        { "skill": "Evaluating expressions", "desc": "값 대입 계산.", "example": "If x = -2, what is 4x^2 - 3x + 1?" },
+        { "skill": "Combining like terms", "desc": "동류항 정리.", "example": "Simplify 5x + 3 - 2x + 8." }
+      ],
+      "mid": [
+        { "skill": "Linear equations with variables on both sides", "desc": "양변에 변수가 있는 방정식.", "example": "Solve 4x - 5 = 2x + 9." },
+        { "skill": "Systems of linear equations", "desc": "연립방정식(대입·소거).", "example": "If x + y = 10 and x - y = 4, what is x?" },
+        { "skill": "Linear inequalities", "desc": "일차부등식과 해.", "example": "Solve for x: 3x + 2 > 11." }
+      ],
+      "high": [
+        { "skill": "Factoring quadratics", "desc": "이차식 인수분해.", "example": "Factor x^2 - 5x + 6." },
+        { "skill": "Solving quadratic equations", "desc": "이차방정식(인수분해·근의공식).", "example": "Solve x^2 - 7x + 12 = 0." },
+        { "skill": "Function notation & slope", "desc": "함수 표기, 기울기·직선의 방정식.", "example": "A line passes through (1, 2) and (3, 8). What is its slope?" }
+      ]
+    }
+  },
+
+  "GEO": {
+    "name": "Geometry",
+    "subject": "math",
+    "style": "텍스트 + matplotlib 도형. 넓이·둘레·각·피타고라스·부피·좌표기하. 도형이 이해를 돕는 문항은 fig(matplotlib)로 도형을 그려 포함(삼각형·사각형·원·좌표평면 등). 필요한 치수는 문장과 도형 라벨에 명시. 선택지 4개 수치, 오답은 공식 혼동을 반영. exp는 공식과 대입을 한 줄로. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "Perimeter & area of rectangles/triangles", "desc": "사각형·삼각형 둘레·넓이.", "example": "A rectangle is 8 cm by 5 cm. What is its area?" },
+        { "skill": "Angles on a line & around a point", "desc": "보각·교각 등 기본 각.", "example": "Two angles are supplementary. One is 65 degrees. What is the other?" }
+      ],
+      "mid": [
+        { "skill": "Circles: circumference & area", "desc": "원의 둘레·넓이(pi 사용).", "example": "A circle has radius 7. What is its area? (Use pi = 22/7.)" },
+        { "skill": "Pythagorean theorem", "desc": "직각삼각형 빗변·변.", "example": "A right triangle has legs 6 and 8. What is the hypotenuse?" },
+        { "skill": "Angles in triangles & parallel lines", "desc": "삼각형 내각합, 평행선 동위·엇각.", "example": "A triangle has angles 40 and 75 degrees. What is the third angle?" }
+      ],
+      "high": [
+        { "skill": "Volume & surface area of solids", "desc": "직육면체·원기둥 부피·겉넓이.", "example": "A cylinder has radius 3 and height 10. What is its volume? (Use pi = 3.14.)" },
+        { "skill": "Coordinate geometry: distance & midpoint", "desc": "좌표평면 거리·중점.", "example": "What is the distance between the points (1, 2) and (4, 6)?" },
+        { "skill": "Similar figures & scale factor", "desc": "닮음비와 넓이·길이 비.", "example": "Two similar triangles have a side ratio of 2:3. If the smaller has area 16, what is the larger's area?" }
+      ]
+    }
+  },
+
+  "DATA": {
+    "name": "Data & Word Problems",
+    "subject": "math",
+    "style": "텍스트 + matplotlib 차트. 평균·중앙값·최빈값·확률·표/그래프 해석·다단계 문장제. 막대·꺾은선·산점도 등 데이터 해석 문항은 fig(matplotlib 차트)로 그래프를 포함하고 질문이 그 그래프를 참조. 선택지 4개 수치, 오답은 흔한 해석 오류를 반영. exp는 접근법을 한 줄로. 정답은 명백히 하나.",
+    "levels": {
+      "low": [
+        { "skill": "Mean, median, mode", "desc": "대표값 계산.", "example": "What is the mean of 4, 8, 10, 6, 12?" },
+        { "skill": "Reading a simple table/list", "desc": "텍스트 표에서 값 읽고 비교.", "example": "Sales were Mon 12, Tue 9, Wed 15, Thu 9. On which day were sales highest?" }
+      ],
+      "mid": [
+        { "skill": "Basic probability", "desc": "단순 사건 확률.", "example": "A bag has 3 red and 5 blue marbles. What is the probability of drawing red?" },
+        { "skill": "Multi-step word problems", "desc": "여러 단계를 요하는 문장제.", "example": "A book costs $18. With a 25% discount and then $2 shipping, what is the total?" }
+      ],
+      "high": [
+        { "skill": "Weighted average & data reasoning", "desc": "가중평균, 데이터에서의 추론.", "example": "A class of 10 averages 80; a class of 20 averages 86. What is the combined average?" },
+        { "skill": "Compound probability & counting", "desc": "복합 사건 확률·경우의 수.", "example": "Two fair coins are flipped. What is the probability of getting exactly one head?" }
+      ]
+    }
+  }
+}
