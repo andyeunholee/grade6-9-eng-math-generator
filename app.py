@@ -1537,6 +1537,7 @@ if 'manual_practice_result' not in st.session_state:
 # Main Content
 st.markdown("### 📚 Skill Domain Practice Bank")
 st.markdown("Pick a Skill Domain (the same domains shown on the Placement Diagnostic Report) and generate fresh Grade 6-9 practice questions.")
+st.caption("Sub-topic is optional: leave it on \"-- Whole Domain --\" to cover the whole domain, or pick one sub-topic to focus every question on that single skill.")
 
 
 # --- Subject list from curriculum.json (matches the Placement Diagnostic Report) ---
